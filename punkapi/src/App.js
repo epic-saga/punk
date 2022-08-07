@@ -1,22 +1,23 @@
 import logo from './logo.svg';
 import './App.css';
+import {useEffect} from "react";
+import Search from './View/Search'
+import searchApiInstance from './Model/SearchApi';
+
+
+
 
 function App() {
+/*   useEffect(()=> {
+    searchApiInstance.search("ale"); //fetch data from api
+ }, []); */
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          <Search/>
+        
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
     </div>
   );
