@@ -1,71 +1,60 @@
 
+import React from "react";
 
 const url = "https://api.punkapi.com/v2/beers";
 
-class SearchApi {
+class SearchApi extends React.Component{
     constructor() {
+        super();
+        this.dataIsLoaded = false;
         this.response = [];
+        this.searchResult = [];
         this.type = null
     }
     async fetchData() {
         console.log("fetch");
-        try {
-            const res = await fetch(url);
-            this.response = await res.json();
-        } catch (e) {
-            console.error(e.toString);
-        } 
+        let resp = await fetch(url);
+        this.response = await resp.json();
+        console.log(this.response);
     }
-    cherryPick() {
-        console.log("cherry pick");
-        const result = [];
+    cherryPick(type) {
+        console.log("cherry pick " + type);
+        type = new RegExp(type);
         let elem = null;
         let count = 0;
+        this.searchResult = [];
         for (let index = 0; index < this.response.length; index++) {
             
             elem = this.response[index];
-            //if elem.description.search(/this.type/i/), "description" : elem.description, "abv" : elem.abv
-            result[count] = {"name" : elem.name};
-            count++;
+            if (elem.description.match(type)!= null){
+                this.searchResult[count] = {"id": elem.id, "name": elem.name, "description": elem.description, "abv": elem.abv};
+                count++;
+            } 
             
         }
-        console.log(result[0]);
-        return result;
+        console.log(this.searchResult);
     }
-    search(type) {
+
+    async searchType(type) {
         console.log("search");
-        if(type == ""){
-            return null;
-        }
-        
-        this.type = new RegExp(type, 'i');
-        
+
         if (this.response.length === 0) {
             console.log("response empty");
             this.fetchData()
                 .then(() => {
-                    return this.cherryPick();
+                    console.log(this.response);;
+                })
+                .then(() => {
+                    this.cherryPick(type);
+                })
+                .then(() => {
+                    return this.searchResult;
                 });
         }
         
-        return this.cherryPick();
-/*         if (list === null) {
-            return await this.response;
-        }
-        return await this.format(); */
-        
-        
-        /* 
+        this.cherryPick(type)
 
-        console.log("res");
-        console.log(res.json()); */
-
-/*         this.response = () => {
-            return fetch(url)
-                .then((data) => 
-                    console.log(data.json())
-                );
-        }  */
+        return this.searchResult;
     }
 }
 const searchApiInstance = new SearchApi();

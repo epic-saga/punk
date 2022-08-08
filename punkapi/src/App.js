@@ -2,22 +2,23 @@ import logo from './logo.svg';
 import './App.css';
 import {useEffect} from "react";
 import Search from './View/Search'
+import SearchDescription from './View/SearchDescription'
 import searchApiInstance from './Model/SearchApi';
 
 
 
 
-function App() {
-/*   useEffect(()=> {
+function App() {/* 
+  useEffect(()=> {
     searchApiInstance.search("ale"); //fetch data from api
  }, []); */
   return (
     <div className="App">
       <header className="App-header">
-        <p>
+        
           <Search/>
         
-        </p>
+        
       </header>
     </div>
   );
