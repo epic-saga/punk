@@ -1,27 +1,30 @@
 
 import React from "react";
+import { useState, useEffect } from "react";
 import searchApiInstance from '../Model/SearchApi';
 //import {Link}, {Redirect} from "react-router-dom";
 
 function SearchResults (props) {
-    console.log("search results " + props.data.list);
-    let index = 0;
-    let list = props.data.list;
-    if (list[index] == null) {
-        console.log("list[index] = null");
-        return <p>no results</p>
+    const mapItems = (res) => {
+        return res.map((res) => < div key={res.id}>{res.name} ({res.abv}%)</div>)
     }
-/*     for (let i = 0; i < list.length; i++) {
-        list[i].name
-    }; */
-    return <p>{list[index].name}</p>
+     console.log("search results ");
+     if (props.data.length == 0) {
+        return <p>No results, try again</p>
+     }
+
+     return <div>
+        <h2>Results</h2>
+        <div>
+            {mapItems(props.data)}
+        </div>
+    </div>
 }
 
 function SearchDescription(props) {
-    console.log(props.data);
+    console.log("search destiption");
     return <p>description</p>
 }
-
 
 class Search extends React.Component {
     constructor(props){
@@ -35,25 +38,16 @@ class Search extends React.Component {
         } 
     }
 
-    handleSubmit () {
-        console.log('handlesubmit method is called')
-        searchApiInstance.searchType(this.state.userInput)
-            .then((resp) => { this.setState({status : "SEARCH", list: resp}) });
-    }          
-
-    componentDidUpdate(){
-        if (this.state.status === "SEARCH") {
-            console.log('componentDidUpdate method is called');
-            console.log(this.state.list);
-            this.setState({status: "DONE", display: <SearchResults data={this.state}/>});
-        }
+    async handleSubmit () {
+        await new Promise(() => {
+            searchApiInstance.searchType(this.state.userInput)
+                .then((res) => {
+                    this.setState({list:res, display:<SearchResults data={res}/>});
+                });
+        });
     }
 
     render() {
-        let display = null;
-        //let nrPages = this.state.list.length/10; //how does js handle int/dec/div
-        let currentPage = null;
-        
         return (
             <div>
                 <h2>Search!</h2>
@@ -68,7 +62,6 @@ class Search extends React.Component {
                      >Search</button>
                 
                 {this.state.display}
-                {currentPage}
             </div>
         );
     }

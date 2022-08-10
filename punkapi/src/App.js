@@ -2,7 +2,6 @@ import logo from './logo.svg';
 import './App.css';
 import {useEffect} from "react";
 import Search from './View/Search'
-import SearchDescription from './View/SearchDescription'
 import searchApiInstance from './Model/SearchApi';
 
 
