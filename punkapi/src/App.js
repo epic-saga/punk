@@ -1,21 +1,23 @@
 import logo from './logo.svg';
 import './App.css';
 import {useEffect} from "react";
-import Search from './View/Search'
+import { Routes, Route} from 'react-router-dom';
+import {Search, SearchResults, SearchDescription} from './View/Search';
 import searchApiInstance from './Model/SearchApi';
 
 
 
 
-function App() {/* 
-  useEffect(()=> {
-    searchApiInstance.search("ale"); //fetch data from api
- }, []); */
+function App() {
   return (
     <div className="App">
       <header className="App-header">
-        
-          <Search/>
+
+        <Routes>
+          <Route path="/" element={<Search/>}/>
+          <Route path="/results" element={<SearchResults/>}/>
+          <Route path='/:id' element={<SearchDescription/>}/>
+        </Routes>
         
         
       </header>

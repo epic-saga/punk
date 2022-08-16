@@ -1,30 +1,121 @@
 
-import React from "react";
+import React, { Component } from "react";
 import { useState, useEffect } from "react";
 import searchApiInstance from '../Model/SearchApi';
-//import {Link}, {Redirect} from "react-router-dom";
-
-function SearchResults (props) {
-    const mapItems = (res) => {
-        return res.map((res) => < div key={res.id}>{res.name} ({res.abv}%)</div>)
+import {Link, Navigate, useNavigate, Route, Routes, useLocation} from "react-router-dom";
+/* 
+class SearchResults extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            res: this.props.data
+        } 
     }
-     console.log("search results ");
-     if (props.data.length == 0) {
-        return <p>No results, try again</p>
-     }
-
-     return <div>
-        <h2>Results</h2>
-        <div>
-            {mapItems(props.data)}
+    mapItems(res) {
+        return res.map((res) => 
+        < div key={res.id}>
+            <Link to={`/${res.id}`} state={res}>
+                {res.name} ({res.abv}%)</Link>
+        </div>)
+    }
+    render(){
+        console.log("search res");
+        let display = null;
+        if (this.props.data.length == 0) {
+            display = <p>No results, try again</p>
+        }   else{
+            display =         <div>
+            <div>
+                {this.mapItems(this.props.data)}
+            </div>
         </div>
-    </div>
+        }
+        return (
+            <div>
+                {display}
+            </div>
+        );
+    }
+}; */
+
+function SearchResults(props) {
+
+    const mapItems = (res) => {
+        const name = res.name;
+        return res.map((res) => 
+        < div key={res.id}>
+            <Link to={`/${res.id}`} state={res}>
+            {res.name} ({res.abv}%)</Link>
+        </div>)
+    }
+
+    console.log(props);
+    if (props.length == 0) {
+        return <p>No results, try again</p>
+    }
+
+    return (
+        <div>
+            <div>
+                {mapItems(props.res)}
+            </div>
+        </div>);
+}        
+
+function SearchDescription(props) { 
+    const location = useLocation();
+    //console.log(location.state);
+    let item = location.state;  
+
+    return (<div>
+        <h3>{item.name}</h3>
+        <p>{item.description}</p>
+    </div>);
 }
 
-function SearchDescription(props) {
-    console.log("search destiption");
-    return <p>description</p>
-}
+function SearchBar(props) {
+    let userInput = "";
+    let searchResults = [];
+
+    const handleSubmit = async() => {
+        console.log("handle submit");
+        await new Promise(() => {
+            searchApiInstance.searchType(userInput)
+                .then((res) => {
+                    props.parentCallback({res});
+                });
+        });
+    }
+
+    const handleInput = (e) => {
+        console.log("handle input");
+        console.log(e.target.value);
+        if (e.key === "Enter") {
+            console.log("key enter");
+            handleSubmit();
+        } else{
+            userInput = e.target.value;}
+
+        console.log(userInput);
+    }
+
+        return (
+            <div>
+                <h2>Search!</h2>
+                
+                <input
+                    type="text"
+                    placeholder="Search here"
+                    onKeyUp={(e) => handleInput(e)} />
+                <button 
+                    type="submit"
+                    onClick={() => {
+                        handleSubmit(); 
+                    }}
+                    > Search </button>  
+            </div>
+        );
+    }
 
 class Search extends React.Component {
     constructor(props){
@@ -33,39 +124,44 @@ class Search extends React.Component {
             status: null,
             userInput: "",
             list: [],
+            pages: null,
             page: 0,
             display: null
         } 
     }
 
-    async handleSubmit () {
-        await new Promise(() => {
-            searchApiInstance.searchType(this.state.userInput)
-                .then((res) => {
-                    this.setState({list:res, display:<SearchResults data={res}/>});
-                });
-        });
+    handleCallback = (childData) =>{
+        let pages = [];
+        let count = 0;
+        while(Math.ceil(childData.res.length/10)>count){
+            pages[count] = 1 + count++;
+        }
+        this.setState({list: childData, status: "SEARCH", pages: pages});
+    }
+    handlePages(page){
+      
+    }
+    componentDidUpdate(){
+        if (this.state.status == "SEARCH") {
+            console.log("updated");
+            this.setState({display: SearchResults(this.state.list), status: null});
+        }
     }
 
     render() {
         return (
             <div>
-                <h2>Search!</h2>
+                <SearchBar parentCallback = {this.handleCallback}/>
                 
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    onChange={e=> this.setState({userInput: e.target.value})} />
-                <button 
-                    type="submit"
-                    onClick={() => this.handleSubmit()}
-                     >Search</button>
-                
-                {this.state.display}
+                {console.log(this.state.list)}
+                <br/>
+                {this.state.display}   
+                <br/>
+                {this.state.pages}               
             </div>
         );
     }
     
 }
 
-export default Search;
+export {Search, SearchResults, SearchDescription};
