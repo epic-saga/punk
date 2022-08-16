@@ -1,42 +1,7 @@
 
-import React, { Component } from "react";
-import { useState, useEffect } from "react";
+import React from "react";
 import searchApiInstance from '../Model/SearchApi';
-import {Link, Navigate, useNavigate, Route, Routes, useLocation} from "react-router-dom";
-/* 
-class SearchResults extends Component {
-    constructor(props){
-        super(props);
-        this.state = {
-            res: this.props.data
-        } 
-    }
-    mapItems(res) {
-        return res.map((res) => 
-        < div key={res.id}>
-            <Link to={`/${res.id}`} state={res}>
-                {res.name} ({res.abv}%)</Link>
-        </div>)
-    }
-    render(){
-        console.log("search res");
-        let display = null;
-        if (this.props.data.length == 0) {
-            display = <p>No results, try again</p>
-        }   else{
-            display =         <div>
-            <div>
-                {this.mapItems(this.props.data)}
-            </div>
-        </div>
-        }
-        return (
-            <div>
-                {display}
-            </div>
-        );
-    }
-}; */
+import {Link, useLocation} from "react-router-dom";
 
 function SearchResults(props) {
 
@@ -64,7 +29,6 @@ function SearchResults(props) {
 
 function SearchDescription(props) { 
     const location = useLocation();
-    //console.log(location.state);
     let item = location.state;  
 
     return (<div>
